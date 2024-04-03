@@ -1,0 +1,25 @@
+name: Copy Repo to S3
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  copy_to_s3:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+
+      - name: Copy repo to S3
+        run: |
+          aws s3 sync . s3://${{ secrets.S3_BUCKET }}/${{ secrets.S3_KEY }} \
+          --region ${{ secrets.AWS_REGION }} \
+          --access-key-id ${{ secrets.AWS_ACCESS_KEY_ID }} \
+          --secret-access-key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
